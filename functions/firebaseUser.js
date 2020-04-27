@@ -1,5 +1,5 @@
-const admin = require('firebase-admin');
-const cookieParser = require('cookie-parser')();
+const admin = require("firebase-admin");
+const cookieParser = require("cookie-parser")();
 
 const serviceAccount = require("./util/node-project-f754e-firebase-adminsdk-t006e-e94eca37b0.json");
 admin.initializeApp({
@@ -13,8 +13,8 @@ const db = admin.firestore();
 // The Firebase ID token needs to be passed as a Bearer token in the Authorization HTTP header like this:
 // `Authorization: Bearer <Firebase ID Token>`.
 // When decoded successfully, the ID Token content will be added as `req.user`.
-async function validateFirebaseIdToken (req, res, next) {
-  console.log('Check if request is authorized with Firebase ID token');
+const validateFirebaseIdToken = async (req, res, next) => {
+  console.log("Check if request is authorized with Firebase ID token");
 
   const idToken = await getIdTokenFromRequest(req, res);
   if (idToken) {
@@ -26,11 +26,14 @@ async function validateFirebaseIdToken (req, res, next) {
 /**
  * Returns a Promise with the Firebase ID Token if found in the Authorization or the __session cookie.
  */
-function getIdTokenFromRequest(req, res) {
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+const getIdTokenFromRequest = (req, res) => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer ")
+  ) {
     console.log('Found "Authorization" header');
     // Read the ID Token from the Authorization header.
-    return Promise.resolve(req.headers.authorization.split('Bearer ')[1]);
+    return Promise.resolve(req.headers.authorization.split("Bearer ")[1]);
   }
   return new Promise((resolve, reject) => {
     cookieParser(req, res, () => {
@@ -43,18 +46,18 @@ function getIdTokenFromRequest(req, res) {
       }
     });
   });
-}
+};
 
 /**
  * Returns a Promise with the Decoded ID Token and adds it to req.user.
  */
-async function addDecodedIdTokenToRequest(idToken, req) {
+const addDecodedIdTokenToRequest = async (idToken, req) => {
   try {
     const decodedIdToken = await admin.auth().verifyIdToken(idToken);
     req.user = decodedIdToken;
-    console.log('ID Token correctly decoded', decodedIdToken);
+    console.log("ID Token correctly decoded", decodedIdToken);
   } catch (error) {
-    console.error('Error while verifying Firebase ID token:', error);
+    console.error("Error while verifying Firebase ID token:", error);
   }
 }
 
