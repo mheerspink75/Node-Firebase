@@ -1,20 +1,22 @@
-const functions = require("firebase-functions");
-require('./util/firestore_test')
-const express = require("express");
-const engines = require("consolidate");
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-
+const express = require('express');
+const exphbs = require('express-handlebars');
 const app = express();
+const firebaseUser = require('./firebaseUser');
 
-app.engine("hbs", engines.handlebars);
-app.set('views', './views');
-app.set("view engine", "hbs");
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+app.use(firebaseUser.validateFirebaseIdToken);
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.get('/', (req, res) => {
+  console.log('Signed-in user:', req.user);
+  return res.render('user', {
+    user: req.user,
+  });
+});
 
-
-module.exports.app = functions.https.onRequest(app);
+exports.app = functions.https.onRequest(app);
 
