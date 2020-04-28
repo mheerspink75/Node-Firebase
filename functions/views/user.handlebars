@@ -1,6 +1,7 @@
 {{#if user}}
   <h1>Hello {{user.name}}!</h1>
   Here is your UID: {{user.uid}}
+  <h1>Test {{ users }}</h1>
   <br><br>
   <button onclick="firebase.auth().signOut()">Sign-out</button>
 {{^}}
@@ -9,3 +10,4 @@
   <br><br>
   <button onclick="firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())">Sign-in with Google</button>
 {{/if}}
+
